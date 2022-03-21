@@ -1,9 +1,9 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
+    [Header("Movement")]
     [SerializeField] private bool stopPlayer = false;
     [SerializeField] private bool isGrounded;
     [SerializeField] private bool inAir;
@@ -15,6 +15,12 @@ public class PlayerMovement : MonoBehaviour
     [Header("Animations")]
     [SerializeField] private GameObject visualObj;
     [SerializeField] private float flipSpeed = 1f;
+
+    [Header("Actions")]
+    [SerializeField] private GameObject mouth;
+    [SerializeField] private GameObject tongueObj;
+    [SerializeField] private float tongueDistance = 2f;
+    [SerializeField] private float tongueSpeed = 1f;
 
     // -----------------------------------
 
@@ -55,6 +61,8 @@ public class PlayerMovement : MonoBehaviour
             }
 
             FlipSprite();
+
+            ActivateTongueAnim();
         }
     }
 
@@ -67,7 +75,7 @@ public class PlayerMovement : MonoBehaviour
     }
 
     // --------------------------------------------------
-
+    #region Movement
     private void Move()
     {
         isGrounded = controller.isGrounded;
@@ -101,7 +109,9 @@ public class PlayerMovement : MonoBehaviour
 
         controller.Move(playerVelocity * Time.deltaTime);
     }
+    #endregion
 
+    #region Animations
     private void FlipSprite()
     {
         if (Input.GetKeyDown("a") || left == true)
@@ -149,7 +159,64 @@ public class PlayerMovement : MonoBehaviour
             }
         }
     }
+    #endregion
 
+    #region Actions
+    void ActivateTongueAnim()
+    {
+        if (Input.GetButtonDown("Tongue"))
+        {
+            mouth.SetActive(true);
+            tongueObj.SetActive(false);
+            animator.SetBool("TongueAction", true);
+        }
+    }
+
+    enum State
+    {
+        start,
+        returning,
+        exit
+    };
+
+    public IEnumerator TongueMovement()
+    {
+        float time = 0f;
+
+        State state = State.start;
+
+        Vector3 desiredPos = transform.position + (visualObj.transform.right * tongueDistance);
+        Vector3 initialPos = tongueObj.transform.position;
+
+        tongueObj.SetActive(true);
+
+        while (state != State.exit)
+        {
+            if(state != State.returning)
+                time += Time.deltaTime * tongueSpeed;
+            else
+                time -= Time.deltaTime * tongueSpeed;
+
+            tongueObj.transform.position = Vector3.Lerp(initialPos, desiredPos, time);
+
+            if (time > 1)
+            {
+                state = State.returning;
+            }
+            else if (time < 0)
+            {
+                state = State.exit;
+            }
+            
+            yield return null;
+        }
+
+        mouth.SetActive(false);
+        //tongueObj.SetActive(false);
+        animator.SetBool("TongueAction", false);
+    }
+
+    #endregion
     // --------------------------------------
 
     public void StopPlayer(bool state)

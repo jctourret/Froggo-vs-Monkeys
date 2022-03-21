@@ -6,7 +6,7 @@ public class PlayerInventory : MonoBehaviour
 {
 
     [Header("Camera Movement")]
-    [SerializeField] private Camera camera;
+    [SerializeField] private Camera mainCamera;
 
     [Header("Inventory")]
     [SerializeField] private Transform inventoryGO;
@@ -31,7 +31,7 @@ public class PlayerInventory : MonoBehaviour
             inventoryState = !inventoryState;
             playerMovement.StopPlayer(inventoryState);
 
-            camera.GetComponent<CameraMovement>().Zoom(inventoryState);
+            mainCamera.GetComponent<CameraMovement>().Zoom(inventoryState);
 
             if(inventoryState)
                 inventoryGO.GetComponent<Animator>().SetTrigger("Open");
