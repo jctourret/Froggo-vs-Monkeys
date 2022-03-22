@@ -106,14 +106,14 @@ public class GrappleRope : MonoBehaviour
 
     void DrawRopeWaves()
     {
-        Vector2 grappleDistanceVector = tongueObj.position - parentPosition.position;
+        Vector3 grappleDistanceVector = tongueObj.position - parentPosition.position;
 
         for (int i = 0; i < precision; i++)
         {
             float delta = (float)i / ((float)precision - 1f);
-            Vector2 offset = Vector2.Perpendicular(grappleDistanceVector).normalized * ropeAnimationCurve.Evaluate(delta) * waveSize;
-            Vector2 targetPosition = Vector2.Lerp(parentPosition.position, tongueObj.position, delta) + offset;
-            Vector2 currentPosition = Vector2.Lerp(parentPosition.position, targetPosition, ropeProgressionCurve.Evaluate(moveTime) * ropeProgressionSpeed);
+            Vector3 offset = Vector2.Perpendicular(grappleDistanceVector).normalized * ropeAnimationCurve.Evaluate(delta) * waveSize;
+            Vector3 targetPosition = Vector3.Lerp(parentPosition.position, tongueObj.position, delta) + offset;
+            Vector3 currentPosition = Vector3.Lerp(parentPosition.position, targetPosition, ropeProgressionCurve.Evaluate(moveTime) * ropeProgressionSpeed);
 
             m_lineRenderer.SetPosition(i, currentPosition);
         }

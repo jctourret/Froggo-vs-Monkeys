@@ -36,6 +36,7 @@ public class PlayerMovement : MonoBehaviour
 
     float leftNumber = _ROTATION;
     float rightNumber = _ROTATION;
+    bool isRotating = false;
 
     // -----------------------------------
 
@@ -158,16 +159,29 @@ public class PlayerMovement : MonoBehaviour
                 }
             }
         }
+
+        if (rightNumber == _ROTATION && leftNumber == _ROTATION)
+        {
+            isRotating = false;
+        }
+        else
+        {
+            isRotating = true;
+        }
+
     }
     #endregion
 
     #region Actions
     void ActivateTongueAnim()
     {
-        if (Input.GetButtonDown("Tongue"))
+        if (Input.GetButtonDown("Tongue") && !isRotating)
         {
             mouth.SetActive(true);
             tongueObj.SetActive(false);
+
+            stopPlayer = true;
+
             animator.SetBool("TongueAction", true);
         }
     }
@@ -211,12 +225,16 @@ public class PlayerMovement : MonoBehaviour
             yield return null;
         }
 
+        tongueObj.transform.position = initialPos;
+
         mouth.SetActive(false);
-        //tongueObj.SetActive(false);
+        stopPlayer = false;
+        
         animator.SetBool("TongueAction", false);
     }
 
     #endregion
+
     // --------------------------------------
 
     public void StopPlayer(bool state)
